@@ -6,6 +6,10 @@ import z from "zod";
 import { InputPassword } from "../../components/input-pass";
 import { InputText } from "../../components/input-text";
 import { onFieldError } from "../../utils/on-field-error";
+import { useSignInQuery } from "../../hooks/useSignInQuery";
+import { useSearchParams } from "react-router-dom";
+import { useEffect } from "react";
+import { toast } from "sonner";
 
 enum FormFields {
   email = "email",
@@ -21,6 +25,15 @@ const loginSchema = z.object({
 type LoginForm = z.infer<typeof loginSchema>;
 
 export function SignIn() {
+  const [params, _] = useSearchParams();
+
+  useEffect(() => {
+    const session = params.get("session")
+    if (session === "inactive") {
+      toast.warning("Sua sessão expirou. Faça login novamente!")
+    }
+  }, [])
+
   const hookForm = useForm<LoginForm>({
     resolver: zodResolver(loginSchema),
   });
@@ -30,8 +43,9 @@ export function SignIn() {
     formState: { isSubmitting, errors },
   } = hookForm;
 
-  const handleSignIn = (data: LoginForm) => {
-    console.log(data);
+  const { loginNutritionist } = useSignInQuery();
+  const handleSignIn = async (data: LoginForm) => {
+    await loginNutritionist.mutateAsync(data);
   };
 
   const handleFormError = () => {

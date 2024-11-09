@@ -23,6 +23,14 @@ export default tseslint.config(
         "warn",
         { allowConstantExport: true },
       ],
+      "no-underscore-dangle": [
+        "error", 
+        { 
+          allowAfterThis: true, 
+          allowUnderscoreBeforeDigits: true, 
+          enforceInMethodNames: false 
+        }
+      ],
     },
   },
 );
