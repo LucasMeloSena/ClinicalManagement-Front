@@ -12,7 +12,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
   const [nutritionist, setNutritionist] = useState<Nutritionist>();
   const [authenticated, setAuthenticated] = useState<boolean>(() => {
     return !!localStorage.getItem("@Auth:token");
-  })
+  });
 
   useEffect(() => {
     const storedNutritionist = localStorage.getItem("@Auth:nutritionist");
@@ -21,14 +21,17 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
     if (storedNutritionist && storedToken) {
       const nutritionistData = JSON.parse(storedNutritionist);
       setNutritionist(nutritionistData);
-      setAuthenticated(true)
+      setAuthenticated(true);
       api.defaults.headers.common["Authorization"] = `Bearer ${storedToken}`;
     }
   }, []);
 
-  const signIn = (data: { nutritionist: Nutritionist; token: Record<string, string> }) => {
+  const signIn = (data: {
+    nutritionist: Nutritionist;
+    token: Record<string, string>;
+  }) => {
     setNutritionist(data.nutritionist);
-    setAuthenticated(true)
+    setAuthenticated(true);
     api.defaults.headers.common["Authorization"] = `Bearer ${data.token}`;
 
     localStorage.setItem(
@@ -41,8 +44,8 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
   const signOut = () => {
     localStorage.clear();
     setNutritionist(undefined);
-    setAuthenticated(false)
-    return <Navigate to={"/sign-in"} replace={true} />
+    setAuthenticated(false);
+    return <Navigate to={"/sign-in"} replace={true} />;
   };
 
   return (

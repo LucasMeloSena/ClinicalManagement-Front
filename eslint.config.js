@@ -24,12 +24,12 @@ export default tseslint.config(
         { allowConstantExport: true },
       ],
       "no-underscore-dangle": [
-        "error", 
-        { 
-          allowAfterThis: true, 
-          allowUnderscoreBeforeDigits: true, 
-          enforceInMethodNames: false 
-        }
+        "error",
+        {
+          allowAfterThis: true,
+          allowUnderscoreBeforeDigits: true,
+          enforceInMethodNames: false,
+        },
       ],
     },
   },

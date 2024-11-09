@@ -7,7 +7,7 @@ import { useNavigate } from "react-router-dom";
 
 export function useSignInQuery() {
   const navigate = useNavigate();
-  const { signIn } = useAuth()
+  const { signIn } = useAuth();
 
   const loginNutritionist = useMutation({
     mutationKey: ["nutritionist-login"],
