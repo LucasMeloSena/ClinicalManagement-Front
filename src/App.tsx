@@ -7,7 +7,7 @@ export default function App() {
   return (
     <HelmetProvider>
       <Helmet titleTemplate="%s | ClinicaHelp" />
-      <Toaster richColors />
+      <Toaster richColors position="bottom-center" />
       <RouterProvider router={router} />
     </HelmetProvider>
   );
