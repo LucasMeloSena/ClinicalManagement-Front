@@ -28,11 +28,11 @@ export function SignIn() {
   const [params, _] = useSearchParams();
 
   useEffect(() => {
-    const session = params.get("session")
+    const session = params.get("session");
     if (session === "inactive") {
-      toast.warning("Sua sessão expirou. Faça login novamente!")
+      toast.warning("Sua sessão expirou. Faça login novamente!");
     }
-  }, [])
+  }, []);
 
   const hookForm = useForm<LoginForm>({
     resolver: zodResolver(loginSchema),
