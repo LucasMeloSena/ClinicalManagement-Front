@@ -24,7 +24,7 @@ const bodyBiotypeSchema = z.object({
   id: z.string(),
   name: z.nativeEnum(BodyBiotype),
 });
-const clientSchema = z.object({
+export const clientSchema = z.object({
   name: z.string(),
   email: z.string(),
   phone: z.string().length(11),

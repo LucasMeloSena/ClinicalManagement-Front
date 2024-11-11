@@ -4,8 +4,14 @@ import { AxiosError } from "axios";
 import { toast } from "sonner";
 import { QueriesKeys } from "../utils/enums/queries-keys";
 import { findAllConsultationsApi } from "../api/app/consultation/find-all";
+import { findConsultationByIdApi } from "../api/app/consultation/find-by-id";
 
-export const useConsultationQueries = (params: {nutritionistId: string}) => {
+interface HookParams {
+  id?: string
+  nutritionist?: string
+}
+
+export const useConsultationQueries = (params: HookParams) => {
   const queryClient = useQueryClient();
 
   const createConsultation = useMutation({
@@ -29,12 +35,19 @@ export const useConsultationQueries = (params: {nutritionistId: string}) => {
 
   const { data: consultations } = useQuery({
     queryKey: [QueriesKeys.FindAllConsultations],
-    queryFn: () => findAllConsultationsApi({nutritionistId: params.nutritionistId}),
-    enabled: !!params.nutritionistId
+    queryFn: () => findAllConsultationsApi({nutritionist: params.nutritionist}),
+    enabled: !!params.nutritionist
   });
+
+  const { data: consultation } = useQuery({
+    queryKey: [QueriesKeys.FindConsultationById, params?.id],
+    queryFn: () => findConsultationByIdApi(params?.id ?? ""),
+    enabled: !!params?.id,
+  })
 
   return {
     createConsultation,
     consultations,
+    consultation
   };
 };

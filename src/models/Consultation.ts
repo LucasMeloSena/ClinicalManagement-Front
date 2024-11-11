@@ -1,7 +1,10 @@
+import { Client } from "./Client";
+import { Nutritionist } from "./Nutritionist";
+
 export interface Consultation {
   _id: string;
-  clientId: string;
-  nutritionistId: string;
+  client: Client;
+  nutritionist: Nutritionist;
   startAt: Date;
   endAt: Date;
 }

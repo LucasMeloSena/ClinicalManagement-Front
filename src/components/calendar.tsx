@@ -11,9 +11,10 @@ interface CalendarProps {
     overlap: boolean;
   }[];
   onClick: (arg: DateClickArg) => void;
+  onClickConsultation: (consultationId: string) => void;
 }
 
-export function Calendar({ events, onClick }: CalendarProps) {
+export function Calendar({ events, onClick, onClickConsultation }: CalendarProps) {
   return (
     <>
       <FullCalendar
@@ -21,7 +22,7 @@ export function Calendar({ events, onClick }: CalendarProps) {
         initialView="timeGridWeek"
         weekends={true}
         events={events}
-        eventClick={(e) => console.log(e)}
+        eventClick={(e) => onClickConsultation(e.event._def.publicId)}
         dateClick={onClick}
         locale={brLocale}
         slotMinTime="06:00:00"

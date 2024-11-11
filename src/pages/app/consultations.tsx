@@ -3,6 +3,7 @@ import { useMemo, useState } from "react";
 import {
   ConsultationForm,
   RegisterConsultationForm,
+  UpdateConsultationForm,
 } from "../../components/consultations/form";
 import { Helmet } from "react-helmet-async";
 import dayjs, { Dayjs } from "dayjs";
@@ -12,14 +13,21 @@ import { toast } from "sonner";
 import { Calendar } from "../../components/calendar";
 import { DateClickArg } from "@fullcalendar/interaction/index.js";
 import { useClientsQueries } from "../../hooks/useClientsQueries";
+import { useQueryClient } from "@tanstack/react-query";
+import { QueriesKeys } from "../../utils/enums/queries-keys";
+import { Consultation } from "../../models/Consultation";
 
 export function Consultations() {
-  const [dialogVisible, setDialogVisible] = useState(false);
+  const [registerDialogVisible, setRegisterDialogVisible] = useState(false);
+  const [updateDialogVisible, setUpdateDialogVisible] = useState(false);
   const [date, setDate] = useState<Dayjs>(dayjs(new Date()));
+  const [id, setId] = useState<string>()
+  const [initialData, setInitialData] = useState<Consultation>()
 
   const { nutritionist } = useAuth();
-  const { createConsultation, consultations } = useConsultationQueries({nutritionistId: nutritionist?._id ?? ""});
+  const { createConsultation, consultations, consultation } = useConsultationQueries({id, nutritionist: nutritionist?._id ?? ""});
   const { clients } = useClientsQueries();
+  const queryClient = useQueryClient()
 
   const events = useMemo(() => {
     if (consultations) {
@@ -46,7 +54,7 @@ export function Consultations() {
   const handleDateClick = (arg: DateClickArg) => {
     const clickedDate = dayjs(arg.dateStr);
     setDate(clickedDate);
-    setDialogVisible(true);
+    setRegisterDialogVisible(true);
   };
 
   const handleSubmitConsultation = async (data: RegisterConsultationForm) => {
@@ -77,18 +85,32 @@ export function Consultations() {
     await createConsultation.mutateAsync({
       startAt,
       endAt,
-      clientId: data.client.id,
-      nutritionistId: data.nutritionist.id,
+      client: data.client.id,
+      nutritionist: data.nutritionist.id,
     });
-    setDialogVisible(false);
+    setRegisterDialogVisible(false);
   };
+
+  const handleUpdateConsultation = async (data: UpdateConsultationForm) => {
+    console.log(data)
+  }
+
+  const handleClickInConsultation = (id: string) => {
+    setId(id)
+    queryClient.invalidateQueries({queryKey: [QueriesKeys.FindConsultationById, id]})
+    setInitialData(consultation)
+    setUpdateDialogVisible(true)
+  }
+
+
 
   return (
     <>
       <Helmet title="Home" />
+      
       <Dialog
-        open={dialogVisible}
-        onClose={() => setDialogVisible(false)}
+        open={registerDialogVisible}
+        onClose={() => setRegisterDialogVisible(false)}
         title="Cadastrar Consulta"
       >
         <ConsultationForm<RegisterConsultationForm>
@@ -105,8 +127,20 @@ export function Consultations() {
         />
       </Dialog>
 
+      <Dialog
+        open={updateDialogVisible}
+        onClose={() => setUpdateDialogVisible(false)}
+        title="Atualizar Consulta"
+      >
+        <ConsultationForm<UpdateConsultationForm>
+          onSubmit={handleUpdateConsultation}
+          mode="register"
+          initialData={initialData}
+        />
+      </Dialog>
+
       <div className="h-full w-full p-8">
-        <Calendar events={events} onClick={handleDateClick} />
+        <Calendar events={events} onClick={handleDateClick} onClickConsultation={handleClickInConsultation}/>
       </div>
     </>
   );

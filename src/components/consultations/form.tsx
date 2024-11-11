@@ -2,7 +2,7 @@ import { z } from "zod";
 import { DatePicker } from "../date-picker";
 import Select from "../select";
 import { TimePicker } from "../time-picker";
-import { commonSchema } from "../../utils/common-zod-schema";
+import { commonSchema, nutritionistSchema } from "../../utils/common-zod-schema";
 import {
   Controller,
   DefaultValues,
@@ -17,6 +17,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { onFieldError } from "../../utils/on-field-error";
 import dayjs, { Dayjs } from "dayjs";
 import LoadingButton from "@mui/lab/LoadingButton";
+import { clientSchema } from "../clients/form";
 
 enum FormFields {
   date = "Data",
@@ -30,8 +31,8 @@ const consultationSchema = z.object({
   date: z.custom<Dayjs>(),
   start_at: z.custom<Dayjs>(),
   end_at: z.custom<Dayjs>(),
-  client: commonSchema,
-  nutritionist: commonSchema,
+  client: clientSchema,
+  nutritionist: nutritionistSchema,
 });
 type ConsultationForm = z.infer<typeof consultationSchema>;
 export type RegisterConsultationForm = Required<ConsultationForm>;
@@ -43,7 +44,7 @@ interface ConsultationFormProps<T extends FieldValues> {
   mode: "register" | "update";
   initialData?: T;
   onSubmit: SubmitHandler<T>;
-  data: {
+  data?: {
     date: Dayjs;
     nutritionist: SelectOption;
     clients: SelectOption[];
@@ -83,7 +84,7 @@ export function ConsultationForm<T extends FieldValues>({
           <div className="flex flex-col items-center justify-center gap-4">
             <Controller
               name={"date" as Path<T>}
-              defaultValue={dayjs(data.date) as PathValue<T, Path<T>>}
+              defaultValue={dayjs(data?.date) as PathValue<T, Path<T>>}
               control={control}
               render={({ field }) => (
                 <DatePicker
@@ -96,7 +97,7 @@ export function ConsultationForm<T extends FieldValues>({
             <Controller
               name={"start_at" as Path<T>}
               control={control}
-              defaultValue={dayjs(data.date) as PathValue<T, Path<T>>}
+              defaultValue={dayjs(data?.date) as PathValue<T, Path<T>>}
               render={({ field }) => (
                 <TimePicker
                   label="Hora Início Consulta"
@@ -121,13 +122,13 @@ export function ConsultationForm<T extends FieldValues>({
           <div className="flex flex-col items-center justify-center gap-4">
             <Controller
               name={"nutritionist" as Path<T>}
-              defaultValue={data.nutritionist as PathValue<T, Path<T>>}
+              defaultValue={data?.nutritionist as PathValue<T, Path<T>>}
               control={control}
               render={({ field }) => (
                 <Select
                   label="Nutricionista"
                   options={[
-                    { id: data.nutritionist.id, name: data.nutritionist.name },
+                    { id: data?.nutritionist.id ?? "", name: data?.nutritionist.name ?? "" },
                   ]}
                   value={field.value || { name: "", id: "" }}
                   onChange={field.onChange}
@@ -141,7 +142,7 @@ export function ConsultationForm<T extends FieldValues>({
               render={({ field }) => (
                 <Select
                   label="Cliente"
-                  options={data.clients}
+                  options={data?.clients ?? []}
                   value={field.value || { name: "", id: "" }}
                   onChange={field.onChange}
                 />

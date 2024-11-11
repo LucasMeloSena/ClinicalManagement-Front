@@ -3,8 +3,8 @@ import { api } from "../../../utils/axios";
 interface CreateConsultationParams {
   startAt: Date;
   endAt: Date;
-  clientId: string;
-  nutritionistId: string;
+  client: string;
+  nutritionist: string;
 }
 
 export async function createConsultationApi(body: CreateConsultationParams) {
