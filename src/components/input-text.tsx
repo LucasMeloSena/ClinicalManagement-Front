@@ -5,7 +5,7 @@ import {
   OutlinedTextFieldProps,
 } from "@mui/material";
 
-type InputTextProps = OutlinedTextFieldProps;
+interface InputTextProps extends OutlinedTextFieldProps {}
 
 export function InputText({ value, onChange, label, type }: InputTextProps) {
   return (

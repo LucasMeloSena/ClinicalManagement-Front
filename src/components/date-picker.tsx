@@ -1,3 +1,4 @@
+import { FormControl } from "@mui/material";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import {
   DatePickerFieldProps,
@@ -22,11 +23,18 @@ interface DatePickerProps
 export function DatePicker({ label, value, onChange }: DatePickerProps) {
   return (
     <>
-      <LocalizationProvider dateAdapter={AdapterDayjs} adapterLocale="pt-br">
-        <DemoContainer components={["DatePicker"]}>
-          <MUIDatePicker label={label} value={value} onChange={onChange} />
-        </DemoContainer>
-      </LocalizationProvider>
+      <FormControl sx={{ width: "100%" }} variant="outlined">
+        <LocalizationProvider dateAdapter={AdapterDayjs} adapterLocale="pt-br">
+          <DemoContainer components={["DatePicker"]}>
+            <MUIDatePicker
+              label={label}
+              value={value}
+              onChange={onChange}
+              className="w-full"
+            />
+          </DemoContainer>
+        </LocalizationProvider>
+      </FormControl>
     </>
   );
 }

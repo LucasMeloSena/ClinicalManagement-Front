@@ -11,13 +11,15 @@ import { useConsultationQueries } from "../../hooks/useConsultationQueries";
 import { toast } from "sonner";
 import { Calendar } from "../../components/calendar";
 import { DateClickArg } from "@fullcalendar/interaction/index.js";
+import { useClientsQueries } from "../../hooks/useClientsQueries";
 
 export function Consultations() {
   const [dialogVisible, setDialogVisible] = useState(false);
   const [date, setDate] = useState<Dayjs>(dayjs(new Date()));
 
   const { nutritionist } = useAuth();
-  const { createConsultation, consultations } = useConsultationQueries();
+  const { createConsultation, consultations } = useConsultationQueries({nutritionistId: nutritionist?._id ?? ""});
+  const { clients } = useClientsQueries();
 
   const events = useMemo(() => {
     if (consultations) {
@@ -30,6 +32,16 @@ export function Consultations() {
     }
     return [];
   }, [consultations]);
+
+  const clientsOptions = useMemo(() => {
+    if (clients) {
+      return clients.map((client) => ({
+        id: client._id,
+        name: client.name,
+      }));
+    }
+    return [];
+  }, [clients]);
 
   const handleDateClick = (arg: DateClickArg) => {
     const clickedDate = dayjs(arg.dateStr);
@@ -88,6 +100,7 @@ export function Consultations() {
               id: nutritionist?._id ?? "",
               name: nutritionist?.name ?? "",
             },
+            clients: clientsOptions,
           }}
         />
       </Dialog>

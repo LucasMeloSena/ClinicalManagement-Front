@@ -4,6 +4,7 @@ import { SignIn } from "./pages/auth/sign-in";
 import { AppLayout } from "./pages/_layouts/app";
 import { PrivateRoute } from "./private-routes";
 import { Consultations } from "./pages/app/consultations";
+import { Clients } from "./pages/app/clients";
 
 export const router = createBrowserRouter([
   {
@@ -13,6 +14,10 @@ export const router = createBrowserRouter([
       {
         path: "/consultations",
         element: <PrivateRoute element={<Consultations />} />,
+      },
+      {
+        path: "/clients",
+        element: <PrivateRoute element={<Clients />} />,
       },
     ],
   },

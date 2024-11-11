@@ -3,11 +3,11 @@ import { Outlet } from "react-router-dom";
 import { useAuth } from "../../contexts/auth";
 
 export function AppLayout() {
-  const { signOut } = useAuth()
-  
+  const { signOut } = useAuth();
+
   const handleLogoutClick = () => {
-    signOut()
-  }
+    signOut();
+  };
 
   return (
     <div>
@@ -32,7 +32,9 @@ export function AppLayout() {
             </a>
           </nav>
         </div>
-        <Button variant="contained" onClick={handleLogoutClick}>Logout</Button>
+        <Button variant="contained" onClick={handleLogoutClick}>
+          Logout
+        </Button>
       </header>
       <Outlet />
     </div>

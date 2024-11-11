@@ -5,11 +5,11 @@ import { toast } from "sonner";
 import { QueriesKeys } from "../utils/enums/queries-keys";
 import { findAllConsultationsApi } from "../api/app/consultation/find-all";
 
-export const useConsultationQueries = () => {
+export const useConsultationQueries = (params: {nutritionistId: string}) => {
   const queryClient = useQueryClient();
 
   const createConsultation = useMutation({
-    mutationKey: ["create-consultation"],
+    mutationKey: [QueriesKeys.CreateConsultation],
     mutationFn: createConsultationApi,
     onSuccess: () => {
       queryClient.invalidateQueries({
@@ -29,7 +29,8 @@ export const useConsultationQueries = () => {
 
   const { data: consultations } = useQuery({
     queryKey: [QueriesKeys.FindAllConsultations],
-    queryFn: () => findAllConsultationsApi(),
+    queryFn: () => findAllConsultationsApi({nutritionistId: params.nutritionistId}),
+    enabled: !!params.nutritionistId
   });
 
   return {

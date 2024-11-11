@@ -1,61 +1,54 @@
 import { z } from "zod";
-import { DatePicker } from "../date-picker";
-import Select from "../select";
-import { TimePicker } from "../time-picker";
-import { commonSchema } from "../../utils/common-zod-schema";
 import {
   Controller,
   DefaultValues,
   FieldValues,
   FormProvider,
   Path,
-  PathValue,
   SubmitHandler,
   useForm,
 } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { onFieldError } from "../../utils/on-field-error";
-import dayjs, { Dayjs } from "dayjs";
+import { Dayjs } from "dayjs";
 import LoadingButton from "@mui/lab/LoadingButton";
+import { BodyBiotype } from "../../models/Client";
+import { InputText } from "../input-text";
+import { DatePicker } from "../date-picker";
+import Select from "../select";
+import { useMemo } from "react";
 
-enum FormFields {
-  date = "Data",
-  start_at = "Hora de Início",
-  end_at = "Hora de Término",
-  nutritionist = "Nutricionista",
-  client = "Cliente",
-}
+enum FormFields {}
 
-const consultationSchema = z.object({
-  date: z.custom<Dayjs>(),
-  start_at: z.custom<Dayjs>(),
-  end_at: z.custom<Dayjs>(),
-  client: commonSchema,
-  nutritionist: commonSchema,
+const bodyBiotypeSchema = z.object({
+  id: z.string(),
+  name: z.nativeEnum(BodyBiotype),
 });
-type ConsultationForm = z.infer<typeof consultationSchema>;
-export type RegisterConsultationForm = Required<ConsultationForm>;
-export type UpdateConsultationForm = Partial<ConsultationForm>;
-const registerSchema = consultationSchema;
-const updateSchema = consultationSchema.partial();
+const clientSchema = z.object({
+  name: z.string(),
+  email: z.string(),
+  phone: z.string().length(11),
+  birthDate: z.custom<Dayjs>(),
+  cpf: z.string().length(11),
+  bodyBiotype: bodyBiotypeSchema,
+});
+type ClientForm = z.infer<typeof clientSchema>;
+export type RegisterClientForm = Required<ClientForm>;
+export type UpdateClientForm = Partial<ClientForm>;
+const registerSchema = clientSchema;
+const updateSchema = clientSchema.partial();
 
-interface ConsultationFormProps<T extends FieldValues> {
+interface ClientFormProps<T extends FieldValues> {
   mode: "register" | "update";
   initialData?: T;
   onSubmit: SubmitHandler<T>;
-  data: {
-    date: Dayjs;
-    nutritionist: SelectOption;
-    clients: SelectOption[];
-  };
 }
 
-export function ConsultationForm<T extends FieldValues>({
+export function ClientForm<T extends FieldValues>({
   mode,
   initialData,
   onSubmit,
-  data,
-}: ConsultationFormProps<T>) {
+}: ClientFormProps<T>) {
   const hookForm = useForm<T>({
     resolver: zodResolver(mode === "update" ? updateSchema : registerSchema),
     defaultValues: initialData as DefaultValues<T>,
@@ -73,6 +66,14 @@ export function ConsultationForm<T extends FieldValues>({
     }
   };
 
+  const bodyBiotypeOptions = useMemo(() => {
+    return [
+      { id: "1", name: BodyBiotype.Ectomorfo },
+      { id: "2", name: BodyBiotype.Endomorfo },
+      { id: "3", name: BodyBiotype.Mesomorfo },
+    ];
+  }, []);
+
   return (
     <>
       <FormProvider {...hookForm}>
@@ -82,37 +83,41 @@ export function ConsultationForm<T extends FieldValues>({
         >
           <div className="flex flex-col items-center justify-center gap-4">
             <Controller
-              name={"date" as Path<T>}
-              defaultValue={dayjs(data.date) as PathValue<T, Path<T>>}
+              name={"name" as Path<T>}
               control={control}
               render={({ field }) => (
-                <DatePicker
-                  label="Data Consulta"
+                <InputText
                   value={field.value}
                   onChange={field.onChange}
+                  type="text"
+                  label="Nome"
+                  variant={"outlined"}
                 />
               )}
             />
             <Controller
-              name={"start_at" as Path<T>}
+              name={"email" as Path<T>}
               control={control}
-              defaultValue={dayjs(data.date) as PathValue<T, Path<T>>}
               render={({ field }) => (
-                <TimePicker
-                  label="Hora Início Consulta"
+                <InputText
                   value={field.value}
                   onChange={field.onChange}
+                  type="email"
+                  label="E-mail"
+                  variant={"outlined"}
                 />
               )}
             />
             <Controller
-              name={"end_at" as Path<T>}
+              name={"phone" as Path<T>}
               control={control}
               render={({ field }) => (
-                <TimePicker
-                  label="Hora Término Consulta"
+                <InputText
                   value={field.value}
                   onChange={field.onChange}
+                  type="text"
+                  label="Celular"
+                  variant={"outlined"}
                 />
               )}
             />
@@ -120,28 +125,36 @@ export function ConsultationForm<T extends FieldValues>({
 
           <div className="flex flex-col items-center justify-center gap-4">
             <Controller
-              name={"nutritionist" as Path<T>}
-              defaultValue={data.nutritionist as PathValue<T, Path<T>>}
+              name={"cpf" as Path<T>}
               control={control}
               render={({ field }) => (
-                <Select
-                  label="Nutricionista"
-                  options={[
-                    { id: data.nutritionist.id, name: data.nutritionist.name },
-                  ]}
-                  value={field.value || { name: "", id: "" }}
+                <InputText
+                  value={field.value}
                   onChange={field.onChange}
-                  disabled
+                  type="text"
+                  label="CPF"
+                  variant={"outlined"}
                 />
               )}
             />
             <Controller
-              name={"client" as Path<T>}
+              name={"birthDate" as Path<T>}
+              control={control}
+              render={({ field }) => (
+                <DatePicker
+                  label="Data Nascimento"
+                  value={field.value}
+                  onChange={field.onChange}
+                />
+              )}
+            />
+            <Controller
+              name={"bodyBiotype" as Path<T>}
               control={control}
               render={({ field }) => (
                 <Select
-                  label="Cliente"
-                  options={data.clients}
+                  label="Biotipo Corporal"
+                  options={bodyBiotypeOptions}
                   value={field.value || { name: "", id: "" }}
                   onChange={field.onChange}
                 />
