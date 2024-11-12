@@ -1,5 +1,5 @@
 import { Dialog } from "../../components/dialog";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import {
   ConsultationForm,
   RegisterConsultationForm,
@@ -9,25 +9,33 @@ import { Helmet } from "react-helmet-async";
 import dayjs, { Dayjs } from "dayjs";
 import { useAuth } from "../../contexts/auth";
 import { useConsultationQueries } from "../../hooks/useConsultationQueries";
-import { toast } from "sonner";
 import { Calendar } from "../../components/calendar";
 import { DateClickArg } from "@fullcalendar/interaction/index.js";
 import { useClientsQueries } from "../../hooks/useClientsQueries";
 import { useQueryClient } from "@tanstack/react-query";
 import { QueriesKeys } from "../../utils/enums/queries-keys";
-import { Consultation } from "../../models/Consultation";
+import { generateDate } from "../../utils/generate-date";
+import LoadingButton from "@mui/lab/LoadingButton";
 
 export function Consultations() {
   const [registerDialogVisible, setRegisterDialogVisible] = useState(false);
   const [updateDialogVisible, setUpdateDialogVisible] = useState(false);
+  const [deleteDialogVisible, setDeleteDialogVisible] = useState(false);
+
   const [date, setDate] = useState<Dayjs>(dayjs(new Date()));
-  const [id, setId] = useState<string>()
-  const [initialData, setInitialData] = useState<Consultation>()
+  const [id, setId] = useState<string>();
+  const [initialData, setInitialData] = useState<UpdateConsultationForm>();
 
   const { nutritionist } = useAuth();
-  const { createConsultation, consultations, consultation } = useConsultationQueries({id, nutritionist: nutritionist?._id ?? ""});
+  const {
+    createConsultation,
+    updateConsultation,
+    deleteConsultation,
+    consultations,
+    consultation,
+  } = useConsultationQueries({ id, nutritionist: nutritionist?._id ?? "" });
   const { clients } = useClientsQueries();
-  const queryClient = useQueryClient()
+  const queryClient = useQueryClient();
 
   const events = useMemo(() => {
     if (consultations) {
@@ -58,28 +66,10 @@ export function Consultations() {
   };
 
   const handleSubmitConsultation = async (data: RegisterConsultationForm) => {
-    if (data.end_at.isBefore(data.start_at)) {
-      return toast.warning(
-        "O campo Hora de Término está anterior a Hora de Início",
-      );
-    }
-
-    const date = data.date.toDate();
-    const startTime = data.start_at.toDate();
-    const endTime = data.end_at.toDate();
-    const startAt = new Date(
-      date.getFullYear(),
-      date.getMonth(),
-      date.getDate(),
-      startTime.getHours(),
-      startTime.getMinutes(),
-    );
-    const endAt = new Date(
-      date.getFullYear(),
-      date.getMonth(),
-      date.getDate(),
-      endTime.getHours(),
-      endTime.getMinutes(),
+    const { startAt, endAt } = generateDate(
+      data.date.toDate(),
+      data.startAt,
+      data.endAt,
     );
 
     await createConsultation.mutateAsync({
@@ -92,22 +82,73 @@ export function Consultations() {
   };
 
   const handleUpdateConsultation = async (data: UpdateConsultationForm) => {
-    console.log(data)
-  }
+    if (data.date) {
+      const { startAt, endAt } = generateDate(
+        data.date.toDate(),
+        dayjs(consultation?.startAt),
+        dayjs(consultation?.endAt),
+      );
+      await updateConsultation.mutateAsync({
+        id: id!,
+        startAt: startAt,
+        endAt: endAt,
+        client: data?.client?.id,
+        nutritionist: data?.nutritionist?.id,
+      });
+    }
+    await updateConsultation.mutateAsync({
+      id: id!,
+      startAt: data?.startAt?.toDate(),
+      endAt: data?.endAt?.toDate(),
+      client: data?.client?.id,
+      nutritionist: data?.nutritionist?.id,
+    });
+
+    setUpdateDialogVisible(false);
+  };
+
+  const handleDeleteConsultation = async () => {
+    await deleteConsultation.mutateAsync(id ?? "");
+    setDeleteDialogVisible(false);
+    setUpdateDialogVisible(false);
+  };
 
   const handleClickInConsultation = (id: string) => {
-    setId(id)
-    queryClient.invalidateQueries({queryKey: [QueriesKeys.FindConsultationById, id]})
-    setInitialData(consultation)
-    setUpdateDialogVisible(true)
-  }
+    setId(id);
+    queryClient.invalidateQueries({
+      queryKey: [QueriesKeys.FindConsultationById, id],
+    });
+  };
 
+  const formData = useMemo(() => {
+    return {
+      ...(consultation ?? {}),
+      _id: id ?? "",
+      client: {
+        id: consultation?.client._id ?? "",
+        name: consultation?.client.name ?? "",
+      },
+      nutritionist: {
+        id: consultation?.nutritionist._id ?? "",
+        name: consultation?.nutritionist.name ?? "",
+      },
+      date: dayjs(consultation?.startAt),
+      startAt: dayjs(consultation?.startAt),
+      endAt: dayjs(consultation?.endAt),
+    };
+  }, [consultation]);
 
+  useEffect(() => {
+    if (id && consultation) {
+      setInitialData(formData);
+      setUpdateDialogVisible(true);
+    }
+  }, [formData, id, consultation]);
 
   return (
     <>
       <Helmet title="Home" />
-      
+
       <Dialog
         open={registerDialogVisible}
         onClose={() => setRegisterDialogVisible(false)}
@@ -134,13 +175,38 @@ export function Consultations() {
       >
         <ConsultationForm<UpdateConsultationForm>
           onSubmit={handleUpdateConsultation}
-          mode="register"
+          onDelete={() => setDeleteDialogVisible(true)}
+          mode="update"
           initialData={initialData}
+          data={{
+            clients: clientsOptions,
+            nutritionist: {
+              id: nutritionist?._id ?? "",
+              name: nutritionist?.name ?? "",
+            },
+          }}
         />
       </Dialog>
 
+      <Dialog
+        open={deleteDialogVisible}
+        onClose={() => setDeleteDialogVisible(false)}
+        title="Excluir Consulta"
+      >
+        <div className="flex flex-col gap-4">
+          <h2>Você tem certeza que deseja excluir esta consulta?</h2>
+          <LoadingButton variant="contained" onClick={handleDeleteConsultation}>
+            Confirmar
+          </LoadingButton>
+        </div>
+      </Dialog>
+
       <div className="h-full w-full p-8">
-        <Calendar events={events} onClick={handleDateClick} onClickConsultation={handleClickInConsultation}/>
+        <Calendar
+          events={events}
+          onClick={handleDateClick}
+          onClickConsultation={handleClickInConsultation}
+        />
       </div>
     </>
   );

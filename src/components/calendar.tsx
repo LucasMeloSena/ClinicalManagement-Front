@@ -14,7 +14,11 @@ interface CalendarProps {
   onClickConsultation: (consultationId: string) => void;
 }
 
-export function Calendar({ events, onClick, onClickConsultation }: CalendarProps) {
+export function Calendar({
+  events,
+  onClick,
+  onClickConsultation,
+}: CalendarProps) {
   return (
     <>
       <FullCalendar

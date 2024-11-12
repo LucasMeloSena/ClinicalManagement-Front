@@ -2,7 +2,7 @@ import { z } from "zod";
 import { DatePicker } from "../date-picker";
 import Select from "../select";
 import { TimePicker } from "../time-picker";
-import { commonSchema, nutritionistSchema } from "../../utils/common-zod-schema";
+import { commonSchema } from "../../utils/common-zod-schema";
 import {
   Controller,
   DefaultValues,
@@ -17,7 +17,8 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { onFieldError } from "../../utils/on-field-error";
 import dayjs, { Dayjs } from "dayjs";
 import LoadingButton from "@mui/lab/LoadingButton";
-import { clientSchema } from "../clients/form";
+import { dirtyValues } from "../../utils/dirty-values";
+import { Button } from "@mui/material";
 
 enum FormFields {
   date = "Data",
@@ -27,12 +28,12 @@ enum FormFields {
   client = "Cliente",
 }
 
-const consultationSchema = z.object({
+export const consultationSchema = z.object({
   date: z.custom<Dayjs>(),
-  start_at: z.custom<Dayjs>(),
-  end_at: z.custom<Dayjs>(),
-  client: clientSchema,
-  nutritionist: nutritionistSchema,
+  startAt: z.custom<Dayjs>(),
+  endAt: z.custom<Dayjs>(),
+  client: commonSchema,
+  nutritionist: commonSchema,
 });
 type ConsultationForm = z.infer<typeof consultationSchema>;
 export type RegisterConsultationForm = Required<ConsultationForm>;
@@ -44,8 +45,9 @@ interface ConsultationFormProps<T extends FieldValues> {
   mode: "register" | "update";
   initialData?: T;
   onSubmit: SubmitHandler<T>;
+  onDelete?: () => void;
   data?: {
-    date: Dayjs;
+    date?: Dayjs;
     nutritionist: SelectOption;
     clients: SelectOption[];
   };
@@ -55,6 +57,7 @@ export function ConsultationForm<T extends FieldValues>({
   mode,
   initialData,
   onSubmit,
+  onDelete,
   data,
 }: ConsultationFormProps<T>) {
   const hookForm = useForm<T>({
@@ -65,8 +68,17 @@ export function ConsultationForm<T extends FieldValues>({
   const {
     control,
     handleSubmit,
-    formState: { isSubmitting, errors },
+    formState: { isSubmitting, errors, dirtyFields },
   } = hookForm;
+
+  const onClick = (data: T) => {
+    if (mode === "update") {
+      const values = dirtyValues(dirtyFields, data);
+      onSubmit(values as T);
+      return;
+    }
+    onSubmit(data);
+  };
 
   const onError = () => {
     if (errors) {
@@ -79,7 +91,7 @@ export function ConsultationForm<T extends FieldValues>({
       <FormProvider {...hookForm}>
         <form
           className="grid grid-cols-2 items-center justify-center gap-10"
-          onSubmit={handleSubmit(onSubmit, onError)}
+          onSubmit={handleSubmit(onClick, onError)}
         >
           <div className="flex flex-col items-center justify-center gap-4">
             <Controller
@@ -95,7 +107,7 @@ export function ConsultationForm<T extends FieldValues>({
               )}
             />
             <Controller
-              name={"start_at" as Path<T>}
+              name={"startAt" as Path<T>}
               control={control}
               defaultValue={dayjs(data?.date) as PathValue<T, Path<T>>}
               render={({ field }) => (
@@ -107,7 +119,7 @@ export function ConsultationForm<T extends FieldValues>({
               )}
             />
             <Controller
-              name={"end_at" as Path<T>}
+              name={"endAt" as Path<T>}
               control={control}
               render={({ field }) => (
                 <TimePicker
@@ -128,7 +140,10 @@ export function ConsultationForm<T extends FieldValues>({
                 <Select
                   label="Nutricionista"
                   options={[
-                    { id: data?.nutritionist.id ?? "", name: data?.nutritionist.name ?? "" },
+                    {
+                      id: data?.nutritionist.id ?? "",
+                      name: data?.nutritionist.name ?? "",
+                    },
                   ]}
                   value={field.value || { name: "", id: "" }}
                   onChange={field.onChange}
@@ -152,11 +167,20 @@ export function ConsultationForm<T extends FieldValues>({
           <LoadingButton
             loading={isSubmitting}
             variant="contained"
-            className="col-span-2 w-1/2 justify-self-center"
             type="submit"
+            className={
+              mode == "register"
+                ? "col-span-2 w-1/2 justify-self-center"
+                : undefined
+            }
           >
-            Cadastrar
+            {mode === "register" ? "Cadastrar" : "Atualizar"}
           </LoadingButton>
+          {mode == "update" && (
+            <Button variant="contained" onClick={onDelete}>
+              Excluir
+            </Button>
+          )}
         </form>
       </FormProvider>
     </>

@@ -5,10 +5,12 @@ import { toast } from "sonner";
 import { QueriesKeys } from "../utils/enums/queries-keys";
 import { findAllConsultationsApi } from "../api/app/consultation/find-all";
 import { findConsultationByIdApi } from "../api/app/consultation/find-by-id";
+import { updateConsultationApi } from "../api/app/consultation/update";
+import { deleteConsultationApi } from "../api/app/consultation/delete";
 
 interface HookParams {
-  id?: string
-  nutritionist?: string
+  id?: string;
+  nutritionist?: string;
 }
 
 export const useConsultationQueries = (params: HookParams) => {
@@ -33,21 +35,56 @@ export const useConsultationQueries = (params: HookParams) => {
     },
   });
 
+  const updateConsultation = useMutation({
+    mutationKey: [QueriesKeys.UpdateConsultation],
+    mutationFn: updateConsultationApi,
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: [QueriesKeys.FindAllConsultations],
+      });
+      toast.success("Consulta atualizada com sucesso!");
+    },
+    onError: () => {
+      toast.warning(
+        "Ocorreu um erro ao atualizar a consulta. Por favor, tente novamente.",
+      );
+    },
+  });
+
+  const deleteConsultation = useMutation({
+    mutationKey: [QueriesKeys.DeleteConsultation],
+    mutationFn: deleteConsultationApi,
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: [QueriesKeys.FindAllConsultations],
+      });
+      toast.success("Consulta excluida com sucesso!");
+    },
+    onError: () => {
+      toast.warning(
+        "Ocorreu um erro ao excluir a consulta. Por favor, tente novamente.",
+      );
+    },
+  });
+
   const { data: consultations } = useQuery({
     queryKey: [QueriesKeys.FindAllConsultations],
-    queryFn: () => findAllConsultationsApi({nutritionist: params.nutritionist}),
-    enabled: !!params.nutritionist
+    queryFn: () =>
+      findAllConsultationsApi({ nutritionist: params.nutritionist }),
+    enabled: !!params.nutritionist,
   });
 
   const { data: consultation } = useQuery({
     queryKey: [QueriesKeys.FindConsultationById, params?.id],
     queryFn: () => findConsultationByIdApi(params?.id ?? ""),
     enabled: !!params?.id,
-  })
+  });
 
   return {
     createConsultation,
+    updateConsultation,
+    deleteConsultation,
     consultations,
-    consultation
+    consultation,
   };
 };
