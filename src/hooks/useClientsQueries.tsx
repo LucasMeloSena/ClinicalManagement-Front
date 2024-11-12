@@ -4,6 +4,8 @@ import { findAllClientsApi } from "../api/app/clients/find-all";
 import { createClientApi } from "../api/app/clients/create";
 import { toast } from "sonner";
 import { AxiosError } from "axios";
+import { updateClientApi } from "../api/app/clients/update";
+import { deleteClientApi } from "../api/app/clients/delete";
 
 export function useClientsQueries() {
   const queryClient = useQueryClient();
@@ -27,6 +29,38 @@ export function useClientsQueries() {
     },
   });
 
+  const updateClient = useMutation({
+    mutationKey: [QueriesKeys.UpdateClient],
+    mutationFn: updateClientApi,
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: [QueriesKeys.FindAllClients],
+      });
+      toast.success("Cliente atualizado com sucesso!");
+    },
+    onError: () => {
+      toast.warning(
+        "Ocorreu um erro ao atualizar este cliente. Por favor, tente novamente",
+      );
+    },
+  });
+
+  const deleteClient = useMutation({
+    mutationKey: [QueriesKeys.DeleteClient],
+    mutationFn: deleteClientApi,
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: [QueriesKeys.FindAllClients],
+      });
+      toast.success("Cliente excluido com sucesso!");
+    },
+    onError: () => {
+      toast.warning(
+        "Ocorreu um erro ao excluir este cliente. Por favor, tente novamente",
+      );
+    },
+  });
+
   const { data: clients } = useQuery({
     queryKey: [QueriesKeys.FindAllClients],
     queryFn: () => findAllClientsApi(),
@@ -35,5 +69,7 @@ export function useClientsQueries() {
   return {
     clients,
     createClient,
+    updateClient,
+    deleteClient,
   };
 }

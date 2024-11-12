@@ -5,6 +5,7 @@ interface CreateConsultationParams {
   endAt: Date;
   client: string;
   nutritionist: string;
+  intervalOfDaysToRepeat?: number;
 }
 
 export async function createConsultationApi(body: CreateConsultationParams) {

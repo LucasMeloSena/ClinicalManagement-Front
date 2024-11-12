@@ -19,6 +19,7 @@ import dayjs, { Dayjs } from "dayjs";
 import LoadingButton from "@mui/lab/LoadingButton";
 import { dirtyValues } from "../../utils/dirty-values";
 import { Button } from "@mui/material";
+import { InputText } from "../input-text";
 
 enum FormFields {
   date = "Data",
@@ -34,6 +35,7 @@ export const consultationSchema = z.object({
   endAt: z.custom<Dayjs>(),
   client: commonSchema,
   nutritionist: commonSchema,
+  intervalOfDaysToRepeat: z.coerce.number().optional(),
 });
 type ConsultationForm = z.infer<typeof consultationSchema>;
 export type RegisterConsultationForm = Required<ConsultationForm>;
@@ -48,7 +50,7 @@ interface ConsultationFormProps<T extends FieldValues> {
   onDelete?: () => void;
   data?: {
     date?: Dayjs;
-    nutritionist: SelectOption;
+    nutritionists: SelectOption[];
     clients: SelectOption[];
   };
 }
@@ -134,20 +136,13 @@ export function ConsultationForm<T extends FieldValues>({
           <div className="flex flex-col items-center justify-center gap-4">
             <Controller
               name={"nutritionist" as Path<T>}
-              defaultValue={data?.nutritionist as PathValue<T, Path<T>>}
               control={control}
               render={({ field }) => (
                 <Select
                   label="Nutricionista"
-                  options={[
-                    {
-                      id: data?.nutritionist.id ?? "",
-                      name: data?.nutritionist.name ?? "",
-                    },
-                  ]}
+                  options={data?.nutritionists ?? []}
                   value={field.value || { name: "", id: "" }}
                   onChange={field.onChange}
-                  disabled
                 />
               )}
             />
@@ -163,7 +158,27 @@ export function ConsultationForm<T extends FieldValues>({
                 />
               )}
             />
+            {mode == "register" && (
+              <Controller
+                name={"intervalOfDaysToRepeat" as Path<T>}
+                control={control}
+                render={({ field }) => (
+                  <InputText
+                    value={field.value}
+                    onChange={field.onChange}
+                    type="number"
+                    label="Repete (dias)"
+                    variant={"outlined"}
+                  />
+                )}
+              />
+            )}
           </div>
+          {mode == "update" && (
+            <Button variant="contained" onClick={onDelete}>
+              Excluir
+            </Button>
+          )}
           <LoadingButton
             loading={isSubmitting}
             variant="contained"
@@ -176,11 +191,6 @@ export function ConsultationForm<T extends FieldValues>({
           >
             {mode === "register" ? "Cadastrar" : "Atualizar"}
           </LoadingButton>
-          {mode == "update" && (
-            <Button variant="contained" onClick={onDelete}>
-              Excluir
-            </Button>
-          )}
         </form>
       </FormProvider>
     </>

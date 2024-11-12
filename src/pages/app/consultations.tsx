@@ -16,6 +16,7 @@ import { useQueryClient } from "@tanstack/react-query";
 import { QueriesKeys } from "../../utils/enums/queries-keys";
 import { generateDate } from "../../utils/generate-date";
 import LoadingButton from "@mui/lab/LoadingButton";
+import { useNutritionistQueries } from "../../hooks/useNutritionistsQueries";
 
 export function Consultations() {
   const [registerDialogVisible, setRegisterDialogVisible] = useState(false);
@@ -35,6 +36,7 @@ export function Consultations() {
     consultation,
   } = useConsultationQueries({ id, nutritionist: nutritionist?._id ?? "" });
   const { clients } = useClientsQueries();
+  const { nutritionists } = useNutritionistQueries();
   const queryClient = useQueryClient();
 
   const events = useMemo(() => {
@@ -59,6 +61,16 @@ export function Consultations() {
     return [];
   }, [clients]);
 
+  const nutritionistsOptions = useMemo(() => {
+    if (nutritionists) {
+      return nutritionists.map((nutritionist) => ({
+        id: nutritionist._id,
+        name: nutritionist.name,
+      }));
+    }
+    return [];
+  }, [nutritionists]);
+
   const handleDateClick = (arg: DateClickArg) => {
     const clickedDate = dayjs(arg.dateStr);
     setDate(clickedDate);
@@ -77,6 +89,7 @@ export function Consultations() {
       endAt,
       client: data.client.id,
       nutritionist: data.nutritionist.id,
+      intervalOfDaysToRepeat: data.intervalOfDaysToRepeat,
     });
     setRegisterDialogVisible(false);
   };
@@ -159,10 +172,7 @@ export function Consultations() {
           mode="register"
           data={{
             date,
-            nutritionist: {
-              id: nutritionist?._id ?? "",
-              name: nutritionist?.name ?? "",
-            },
+            nutritionists: nutritionistsOptions,
             clients: clientsOptions,
           }}
         />
@@ -180,10 +190,7 @@ export function Consultations() {
           initialData={initialData}
           data={{
             clients: clientsOptions,
-            nutritionist: {
-              id: nutritionist?._id ?? "",
-              name: nutritionist?.name ?? "",
-            },
+            nutritionists: nutritionistsOptions,
           }}
         />
       </Dialog>
