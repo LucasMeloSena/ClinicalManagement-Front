@@ -10,7 +10,6 @@ export function Clients() {
   const [dialogVisible, setDialogVisible] = useState(false);
 
   const { clients, createClient } = useClientsQueries();
-  console.log(clients)
 
   const handleRegisterClient = async (data: RegisterClientForm) => {
     const info = {
