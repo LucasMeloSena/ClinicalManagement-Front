@@ -6,6 +6,7 @@ export interface Client {
   birthDate: Date;
   cpf: string;
   bodyBiotype: BodyBiotype;
+  deletedAt?: Date;
 }
 
 export enum BodyBiotype {
@@ -13,3 +14,9 @@ export enum BodyBiotype {
   Mesomorfo = "Mesomorfo",
   Endomorfo = "Endomorfo",
 }
+
+export const bodyBiotypeOptions = [
+  { id: "1", name: BodyBiotype.Ectomorfo },
+  { id: "2", name: BodyBiotype.Endomorfo },
+  { id: "3", name: BodyBiotype.Mesomorfo },
+];

@@ -9,5 +9,5 @@ interface PrivateRouteProps {
 export function PrivateRoute({ element }: PrivateRouteProps) {
   const { authenticated } = useAuth();
 
-  return authenticated ? element : <Navigate to="/sign-in?session=inactive" />;
+  return authenticated ? element : <Navigate to="/sign-in" />;
 }

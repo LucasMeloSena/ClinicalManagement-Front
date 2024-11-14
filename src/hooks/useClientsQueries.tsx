@@ -56,7 +56,7 @@ export function useClientsQueries() {
     },
     onError: () => {
       toast.warning(
-        "Ocorreu um erro ao excluir este cliente. Por favor, tente novamente",
+        "Ocorreu um erro ao desativar este cliente. Por favor, tente novamente",
       );
     },
   });

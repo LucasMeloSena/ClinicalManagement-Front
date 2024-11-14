@@ -9,8 +9,8 @@ import { ClientForm, RegisterClientForm } from "../../components/clients/form";
 export function Clients() {
   const [dialogVisible, setDialogVisible] = useState(false);
 
-  const { clients, createClient, updateClient, deleteClient } =
-    useClientsQueries();
+  const { clients, createClient } = useClientsQueries();
+  console.log(clients)
 
   const handleRegisterClient = async (data: RegisterClientForm) => {
     const info = {

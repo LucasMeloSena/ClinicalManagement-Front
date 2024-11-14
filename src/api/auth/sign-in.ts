@@ -1,5 +1,5 @@
+import axios from "axios";
 import { Nutritionist } from "../../models/Nutritionist";
-import { api } from "../../utils/axios";
 
 interface SignInApiProps {
   email: string;
@@ -12,7 +12,7 @@ interface SingInResponse {
 }
 
 export async function signInApi(body: SignInApiProps): Promise<SingInResponse> {
-  const response = await api.post("/nutritionist/login", body);
+  const response = await axios.post("http://localhost:3000/nutritionist/login", body);
   return {
     nutritionist: response.data.data.nutritionist,
     token: response.data.data.token,

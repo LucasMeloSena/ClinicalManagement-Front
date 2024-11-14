@@ -12,11 +12,10 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { onFieldError } from "../../utils/on-field-error";
 import { Dayjs } from "dayjs";
 import LoadingButton from "@mui/lab/LoadingButton";
-import { BodyBiotype } from "../../models/Client";
+import { BodyBiotype, bodyBiotypeOptions } from "../../models/Client";
 import { InputText } from "../input-text";
 import { DatePicker } from "../date-picker";
 import Select from "../select";
-import { useMemo } from "react";
 
 enum FormFields {}
 
@@ -65,14 +64,6 @@ export function ClientForm<T extends FieldValues>({
       onFieldError(FormFields, errors);
     }
   };
-
-  const bodyBiotypeOptions = useMemo(() => {
-    return [
-      { id: "1", name: BodyBiotype.Ectomorfo },
-      { id: "2", name: BodyBiotype.Endomorfo },
-      { id: "3", name: BodyBiotype.Mesomorfo },
-    ];
-  }, []);
 
   return (
     <>
@@ -164,10 +155,10 @@ export function ClientForm<T extends FieldValues>({
           <LoadingButton
             loading={isSubmitting}
             variant="contained"
-            className="col-span-2 w-1/2 justify-self-center"
             type="submit"
+            className="col-span-2 w-1/2 justify-self-center"
           >
-            Cadastrar
+            {mode === "register" ? "Cadastrar" : "Atualizar"}
           </LoadingButton>
         </form>
       </FormProvider>
