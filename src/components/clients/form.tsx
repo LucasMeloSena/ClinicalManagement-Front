@@ -16,8 +16,16 @@ import { BodyBiotype, bodyBiotypeOptions } from "../../models/Client";
 import { InputText } from "../input-text";
 import { DatePicker } from "../date-picker";
 import Select from "../select";
+import { TextMaskCustom } from "../input-mask";
 
-enum FormFields {}
+enum FormFields {
+  name = "nome",
+  email = "email",
+  phone = "celular",
+  birthDate = "data de nascimento",
+  cpf = "cpf",
+  bodyBiotype = "biotipo corporal",
+}
 
 const bodyBiotypeSchema = z.object({
   id: z.string(),
@@ -26,9 +34,9 @@ const bodyBiotypeSchema = z.object({
 export const clientSchema = z.object({
   name: z.string(),
   email: z.string(),
-  phone: z.string().length(11),
+  phone: z.string().length(15),
   birthDate: z.custom<Dayjs>(),
-  cpf: z.string().length(11),
+  cpf: z.string().length(14),
   bodyBiotype: bodyBiotypeSchema,
 });
 type ClientForm = z.infer<typeof clientSchema>;
@@ -106,9 +114,11 @@ export function ClientForm<T extends FieldValues>({
                 <InputText
                   value={field.value}
                   onChange={field.onChange}
-                  type="text"
+                  name="textmask"
+                  mask="(00) 90000-0000"
                   label="Celular"
-                  variant={"outlined"}
+                  inputComponent={TextMaskCustom}
+                  variant="outlined"
                 />
               )}
             />
@@ -122,9 +132,11 @@ export function ClientForm<T extends FieldValues>({
                 <InputText
                   value={field.value}
                   onChange={field.onChange}
-                  type="text"
+                  name="textmask"
+                  mask="000.000.000-00"
                   label="CPF"
-                  variant={"outlined"}
+                  inputComponent={TextMaskCustom}
+                  variant="outlined"
                 />
               )}
             />

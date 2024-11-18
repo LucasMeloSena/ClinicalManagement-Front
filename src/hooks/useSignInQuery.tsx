@@ -18,10 +18,11 @@ export function useSignInQuery() {
     },
     onError: (error: AxiosError) => {
       if (error.status === 400) toast.warning("Credenciais inválidas!");
-      else
+      else {
         toast.warning(
           "Ocorreu um erro ao fazer o login. Por favor, tente novamente.",
         );
+      }
     },
   });
 

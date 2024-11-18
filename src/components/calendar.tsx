@@ -32,6 +32,7 @@ export function Calendar({
         slotMinTime="06:00:00"
         slotMaxTime="24:00:00"
         allDaySlot={false}
+        height={"100%"}
       />
     </>
   );

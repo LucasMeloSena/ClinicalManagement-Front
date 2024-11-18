@@ -26,12 +26,13 @@ export const useConsultationQueries = (params: HookParams) => {
       toast.success("Consulta criada com sucesso!");
     },
     onError: (error: AxiosError) => {
-      if (error.status === 422)
+      if (error.status === 422) {
         toast.warning("A data fornecida é anterior a data atual.");
-      else
+      } else {
         toast.warning(
           "Ocorreu um erro ao criar esta consulta. Por favor, tente novamente",
         );
+      }
     },
   });
 
@@ -69,9 +70,7 @@ export const useConsultationQueries = (params: HookParams) => {
 
   const { data: consultations } = useQuery({
     queryKey: [QueriesKeys.FindAllConsultations],
-    queryFn: () =>
-      findAllConsultationsApi({ nutritionist: params.nutritionist }),
-    enabled: !!params.nutritionist,
+    queryFn: () => findAllConsultationsApi(),
   });
 
   const { data: consultation } = useQuery({

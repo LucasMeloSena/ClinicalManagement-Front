@@ -6,6 +6,8 @@ import { toast } from "sonner";
 import { AxiosError } from "axios";
 import { updateClientApi } from "../api/app/clients/update";
 import { deleteClientApi } from "../api/app/clients/delete";
+import { formatCPF } from "../utils/format-phone";
+import { formatPhoneNumber } from "../utils/format-cpf";
 
 export function useClientsQueries() {
   const queryClient = useQueryClient();
@@ -20,12 +22,13 @@ export function useClientsQueries() {
       toast.success("Cliente criado com sucesso!");
     },
     onError: (error: AxiosError) => {
-      if (error.status === 409)
+      if (error.status === 409) {
         toast.warning("Já existe um cliente cadastro com estes dados.");
-      else
+      } else {
         toast.warning(
           "Ocorreu um erro ao criar este cliente. Por favor, tente novamente",
         );
+      }
     },
   });
 
@@ -64,6 +67,12 @@ export function useClientsQueries() {
   const { data: clients } = useQuery({
     queryKey: [QueriesKeys.FindAllClients],
     queryFn: () => findAllClientsApi(),
+    select: (data) =>
+      data.map((client) => ({
+        ...client,
+        cpf: formatCPF(client.cpf),
+        phone: formatPhoneNumber(client.phone),
+      })),
   });
 
   return {

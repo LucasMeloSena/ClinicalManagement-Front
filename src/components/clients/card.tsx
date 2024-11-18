@@ -35,13 +35,13 @@ export default function ClientCard({ client }: ClientCardProps) {
       ...data,
       id: client._id ?? "",
       birthDate: data.birthDate?.toDate(),
-      bodyBiotype: data.bodyBiotype?.name
+      bodyBiotype: data.bodyBiotype?.name,
     });
     setUpdateDialogVisible(false);
   };
 
   const handleDeleteClient = async (id: string) => {
-    await deleteClient.mutateAsync(id)
+    await deleteClient.mutateAsync(id);
     setDeleteDialogVisible(false);
   };
 
@@ -58,7 +58,9 @@ export default function ClientCard({ client }: ClientCardProps) {
           initialData={{
             ...client,
             birthDate: dayjs(client.birthDate),
-            bodyBiotype: bodyBiotypeOptions.filter((item) => item.name == client.bodyBiotype)[0]
+            bodyBiotype: bodyBiotypeOptions.filter(
+              (item) => item.name == client.bodyBiotype,
+            )[0],
           }}
         />
       </Dialog>
@@ -70,7 +72,10 @@ export default function ClientCard({ client }: ClientCardProps) {
       >
         <div className="flex flex-col gap-4">
           <h2>Você tem certeza que deseja desativar este cliente?</h2>
-          <LoadingButton variant="contained" onClick={() => handleDeleteClient(client._id ?? "")}>
+          <LoadingButton
+            variant="contained"
+            onClick={() => handleDeleteClient(client._id ?? "")}
+          >
             Confirmar
           </LoadingButton>
         </div>
