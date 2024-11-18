@@ -9,16 +9,15 @@ import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { Dayjs } from "dayjs";
 import "dayjs/locale/pt-br";
 
-type DatePickerProps
-  = Omit<
-    DatePickerFieldProps<Dayjs>,
-    | "format"
-    | "timezone"
-    | "maxDate"
-    | "minDate"
-    | "disablePast"
-    | "disableFuture"
-  > 
+type DatePickerProps = Omit<
+  DatePickerFieldProps<Dayjs>,
+  | "format"
+  | "timezone"
+  | "maxDate"
+  | "minDate"
+  | "disablePast"
+  | "disableFuture"
+>;
 
 export function DatePicker({ label, value, onChange }: DatePickerProps) {
   return (

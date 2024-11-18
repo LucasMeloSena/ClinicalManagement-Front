@@ -25,4 +25,3 @@ export const clientSchema = z.object({
   cpf: z.string().length(14),
   bodyBiotype: bodyBiotypeSchema,
 });
-
