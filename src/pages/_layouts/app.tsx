@@ -10,7 +10,7 @@ export function AppLayout() {
   };
 
   return (
-    <div>
+    <div className="h-screen">
       <header className="flex items-center justify-between bg-white px-6 py-4 shadow-md">
         <div className="flex items-center space-x-4">
           <div className="text-2xl font-bold text-gray-800">
@@ -29,6 +29,12 @@ export function AppLayout() {
               className="text-gray-600 transition duration-200 hover:text-blue-600"
             >
               Clientes
+            </a>
+            <a
+              href="/statistics"
+              className="text-gray-600 transition duration-200 hover:text-blue-600"
+            >
+              Estatísticas
             </a>
           </nav>
         </div>

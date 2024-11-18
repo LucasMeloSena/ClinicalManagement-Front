@@ -5,11 +5,12 @@ import { AppLayout } from "./pages/_layouts/app";
 import { PrivateRoute } from "./private-routes";
 import { Consultations } from "./pages/app/consultations";
 import { Clients } from "./pages/app/clients";
+import { Statistics } from "./pages/app/statistics";
 
 export const router = createBrowserRouter([
   {
     path: "/",
-    element: <Navigate to="/sign-in" replace/>
+    element: <Navigate to="/sign-in" replace />,
   },
   {
     path: "/",
@@ -22,6 +23,10 @@ export const router = createBrowserRouter([
       {
         path: "/clients",
         element: <PrivateRoute element={<Clients />} />,
+      },
+      {
+        path: "/statistics",
+        element: <PrivateRoute element={<Statistics />} />,
       },
     ],
   },
