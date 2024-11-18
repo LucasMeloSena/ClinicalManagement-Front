@@ -2,7 +2,6 @@ import { z } from "zod";
 import { DatePicker } from "../date-picker";
 import Select from "../select";
 import { TimePicker } from "../time-picker";
-import { commonSchema } from "../../utils/common-zod-schema";
 import {
   Controller,
   DefaultValues,
@@ -20,6 +19,7 @@ import LoadingButton from "@mui/lab/LoadingButton";
 import { dirtyValues } from "../../utils/dirty-values";
 import { Button } from "@mui/material";
 import { InputText } from "../input-text";
+import { consultationSchema } from "../../models/Schemas";
 
 enum FormFields {
   date = "Data",
@@ -29,14 +29,6 @@ enum FormFields {
   client = "Cliente",
 }
 
-export const consultationSchema = z.object({
-  date: z.custom<Dayjs>(),
-  startAt: z.custom<Dayjs>(),
-  endAt: z.custom<Dayjs>(),
-  client: commonSchema,
-  nutritionist: commonSchema,
-  intervalOfDaysToRepeat: z.coerce.number().optional(),
-});
 type ConsultationForm = z.infer<typeof consultationSchema>;
 export type RegisterConsultationForm = Required<ConsultationForm>;
 export type UpdateConsultationForm = Partial<ConsultationForm>;

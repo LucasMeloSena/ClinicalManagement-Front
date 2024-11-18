@@ -26,9 +26,15 @@ export default tseslint.config(
       "no-underscore-dangle": [
         "error",
         {
+          allow: ["_id", "_def"],
           allowAfterThis: true,
-          allowUnderscoreBeforeDigits: true,
           enforceInMethodNames: false,
+          allowAfterSuper: false,
+          allowAfterThisConstructor: false,
+          allowFunctionParams: true,
+          enforceInClassFields: false,
+          allowInArrayDestructuring: true,
+          allowInObjectDestructuring: true,
         },
       ],
     },

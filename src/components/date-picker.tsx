@@ -9,8 +9,8 @@ import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { Dayjs } from "dayjs";
 import "dayjs/locale/pt-br";
 
-interface DatePickerProps
-  extends Omit<
+type DatePickerProps
+  = Omit<
     DatePickerFieldProps<Dayjs>,
     | "format"
     | "timezone"
@@ -18,7 +18,7 @@ interface DatePickerProps
     | "minDate"
     | "disablePast"
     | "disableFuture"
-  > {}
+  > 
 
 export function DatePicker({ label, value, onChange }: DatePickerProps) {
   return (

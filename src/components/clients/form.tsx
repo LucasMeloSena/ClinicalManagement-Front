@@ -10,13 +10,13 @@ import {
 } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { onFieldError } from "../../utils/on-field-error";
-import { Dayjs } from "dayjs";
 import LoadingButton from "@mui/lab/LoadingButton";
-import { BodyBiotype, bodyBiotypeOptions } from "../../models/Client";
+import { bodyBiotypeOptions } from "../../models/Client";
 import { InputText } from "../input-text";
 import { DatePicker } from "../date-picker";
 import Select from "../select";
 import { TextMaskCustom } from "../input-mask";
+import { clientSchema } from "../../models/Schemas";
 
 enum FormFields {
   name = "nome",
@@ -27,18 +27,6 @@ enum FormFields {
   bodyBiotype = "biotipo corporal",
 }
 
-const bodyBiotypeSchema = z.object({
-  id: z.string(),
-  name: z.nativeEnum(BodyBiotype),
-});
-export const clientSchema = z.object({
-  name: z.string(),
-  email: z.string(),
-  phone: z.string().length(15),
-  birthDate: z.custom<Dayjs>(),
-  cpf: z.string().length(14),
-  bodyBiotype: bodyBiotypeSchema,
-});
 type ClientForm = z.infer<typeof clientSchema>;
 export type RegisterClientForm = Required<ClientForm>;
 export type UpdateClientForm = Partial<ClientForm>;

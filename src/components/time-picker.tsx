@@ -8,11 +8,11 @@ import {
 } from "@mui/x-date-pickers/TimePicker";
 import { Dayjs } from "dayjs";
 
-interface TimePickerProps
-  extends Omit<
+type TimePickerProps
+  = Omit<
     TimePickerFieldProps<Dayjs>,
     "ampm" | "format" | "timezone" | "disablePast" | "disableFuture"
-  > {}
+  > 
 
 export function TimePicker({ label, value, onChange }: TimePickerProps) {
   return (

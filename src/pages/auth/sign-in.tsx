@@ -25,14 +25,14 @@ const loginSchema = z.object({
 type LoginForm = z.infer<typeof loginSchema>;
 
 export function SignIn() {
-  const [params, _] = useSearchParams();
+  const [params] = useSearchParams();
 
   useEffect(() => {
     const session = params.get("session");
     if (session === "inactive") {
       toast.warning("Sua sessão expirou. Faça login novamente!");
     }
-  }, []);
+  }, [params]);
 
   const hookForm = useForm<LoginForm>({
     resolver: zodResolver(loginSchema),
