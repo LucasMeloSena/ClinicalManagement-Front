@@ -149,7 +149,7 @@ export function Consultations() {
       startAt: dayjs(consultation?.startAt),
       endAt: dayjs(consultation?.endAt),
     };
-  }, [consultation]);
+  }, [consultation, id]);
 
   useEffect(() => {
     if (id && consultation) {

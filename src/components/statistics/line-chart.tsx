@@ -39,17 +39,13 @@ const LineChart: React.FC = () => {
   ];
   const { consultations } = useConsultationQueries({});
 
-  const groupByMonth = () => {
-    let consultationsByMonth: number[] = Array(12).fill(0);
+  const consultationData = useMemo(() => {
+    const consultationsByMonth: number[] = Array(12).fill(0);
     consultations?.forEach((consultation) => {
       const month = new Date(consultation.startAt).getMonth();
       consultationsByMonth[month] += 1;
     });
     return consultationsByMonth;
-  };
-
-  const consultationData = useMemo(() => {
-    return groupByMonth();
   }, [consultations]);
 
   const data = {
